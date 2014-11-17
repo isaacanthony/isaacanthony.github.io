@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Trivia</title>
+  <meta charset="utf-8">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <style>#answer{font-weight:bold;}.white{color: #F5F5F5;}</style>
+  <script src="trivia_data.js"></script>
+</head>
+<body onload="run()">
+
+<br><br>
+
+<div class="container">
+<div class="row">
+<div class="col-md-6 col-md-offset-3 well">
+
+<div class="row">
+<div class="col-md-12 text-center">
+  <h1>Trivia</h1>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12 lead">
+  <div id="question"></div>
+  <div class="text-center">
+    <div id="answer" class="white"></div>
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-4">
+  <select id="category" class="form-control">
+    <option>All</option>
+    <option>Movies</option>
+    <option>Music</option>
+    <option>Science</option>
+    <option>History</option>
+    <option>Food</option>
+    <option>Misc</option>
+  </select>
+</div>
+<div class="col-md-4">
+  <button onclick="showAnswer()" class="btn btn-primary">Show Answer</button>
+</div>
+<div class="col-md-4">
+  <button onclick="nextQuestion()" class="btn btn-success">Next Queston</button>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+
+var $ = function (str) {
+  return document.getElementById(str);
+};
+
+var showAnswer = function () {
+  $('answer').className = '';
+};
+
+var getQuestion = function () {
+  var e = document.getElementById('category');
+  var category = e.options[e.selectedIndex].value;
+  var rand = Math.floor(Math.random() * 10000000 + 1) % data.length;
+  var question = data[rand];
+  if (category === 'All' || question.cat === category) return question;
+  else return getQuestion();
+};
+
+var run = function () {
+  var question = getQuestion();
+  $('question').innerHTML = question.q;
+  $('answer').innerHTML = question.a;
+};
+
+var nextQuestion = function () {
+  $('answer').className = 'white';
+  run();
+};
+
+</script>
+</body>
+</html>
