@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&clubs; Video Poker</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    #container{font-family:arial; width:500px; margin-left:auto; margin-right:auto;
+               text-align:center;}
+    .card{height:120px; width:80px; float:left; border: 2px solid black; 
+          border-radius:5px; margin-left:10px; margin-right:10px; margin-bottom:15px;
+          box-sizing:border-box; padding-top:30px; font-size:25px;}
+    .card:hover{background-color:black; color:white; cursor:pointer;}
+    .red{color:red;}
+    .red:hover{background-color:red;}
+    .ten{padding-left:2px;}
+    .discard, .discard:hover{background-color:blue; color:blue;}
+    #menu-bar{width:500px;}
+    #coins,#results,#btn-container{width:33%; min-width:33%; float:left;}
+    #coins{font-size:25px; font-weight:bold; color:green;}
+    #btn{font-size: 25px; cursor:pointer;}
+  </style>
+</head>
+<body>
+<div id="container">
+<h1>Jacks or Better</h1>
+<div id="hand">
+  <div class="card discard"></div>
+  <div class="card discard"></div>
+  <div class="card discard"></div>
+  <div class="card discard"></div>
+  <div class="card discard"></div>
+</div>
+<div id="menu-bar">
+  <span id="coins">$100</span>
+  <span id="results">&nbsp;</span>
+  <span id="btn-container">
+    <button id="btn" onclick="main()">Deal</button>
+  </span>
+</div>
+<div id="tests"></div>
+</div> <!-- /.container -->
+<script>
+
+/**
+ * Returns the node with id === str;
+ */
+var $ = function (str) {
+  return document.getElementById(str);
+};
+
+/**
+ * Adds class to given node.
+ */
+var addClass = function (node, className) {
+  $(node).className += ' ' + className;
+};
+
+/**
+ * Removes class from given node.
+ */
+var removeClass = function (node, className) {
+  $(node).className = $(node).className.replace(className, '');
+};
+
+/*
+ * Returns true if node has class.
+ */
+var hasClass = function (node, className) {
+  var classArr = $(node).className.split(' ');
+  for (var i = 0; i < classArr.length; i++) {
+    if (classArr[i] === className) return true;
+  }
+  return false;
+};
+
+/**
+ * Prints a card to #hand.
+ */
+var printCard = function (card) {
+  if (! card) return;
+  var cardText = card;
+  var label = '';
+  var ten = '';
+  if (card[1] === 'D' || card[1] === 'H') label = 'red';
+  if (card[0] === '0') {card = '10' + card[1]; ten = 'ten';}
+  card = card.replace('C', '&clubs;').replace('D', '&diams;')
+         .replace('H', '&hearts;').replace('S', '&spades;');
+  $('hand').innerHTML += '<div id="' + cardText + '" class="card ' + 
+                         label + ' ' + ten + '" onclick="discard(\'' + cardText + '\')">' + card + '</div>';
+};
+
+/**
+ * Prints the results to #results.
+ */
+var printResults = function (result) {
+  $('results').innerHTML = result;
+};
+
+/**
+ * Prints the tests.
+ */
+var printTests = function (test) {
+  $('tests').innerHTML += test + '<br>';
+};
+
+/**
+ * Returns cards from shuffled deck.
+ */
+var Deck = function () {
+  var cards = ['2C','3C','4C','5C','6C','7C','8C','9C','0C','JC','QC','KC','AC',
+               '2D','3D','4D','5D','6D','7D','8D','9D','0D','JD','QD','KD','AD',
+               '2H','3H','4H','5H','6H','7H','8H','9H','0H','JH','QH','KH','AH',
+               '2S','3S','4S','5S','6S','7S','8S','9S','0S','JS','QS','KS','AS'];
+  var shuffle = function (o) {
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+  };
+  return {
+    deal: function () {
+      shuffle(cards);
+      return cards.shift();
+    }
+  };
+};
+
+/**
+ * Returns ranking of hand.
+ */
+var Poker = {
+
+  value(card) {
+    return card[0];
+  },
+
+  suit(card) {
+    return card[1];
+  },
+
+  isPair(h) {
+    for (var i = 0; i < 4; i++) {
+      if (Poker.value(h[i]) === Poker.value(h[i + 1]) &&
+          Poker.value(h[i]).match(/[JQKA]/)) return true;
+    }
+    return false;
+  },
+
+  isTwoPair(h) {
+    if (Poker.value(h[0]) === Poker.value(h[1]) &&
+       (Poker.value(h[2]) === Poker.value(h[3]) ||
+        Poker.value(h[3]) === Poker.value(h[4]))) return true;
+    if (Poker.value(h[3]) === Poker.value(h[4]) &&
+        Poker.value(h[1]) === Poker.value(h[2])) return true;
+    return false;
+  },
+
+  isThreeKind(h) {
+    if (Poker.value(h[0]) === Poker.value(h[1]) &&
+        Poker.value(h[0]) === Poker.value(h[2])) return true;
+    if (Poker.value(h[1]) === Poker.value(h[2]) &&
+        Poker.value(h[1]) === Poker.value(h[3])) return true;
+    if (Poker.value(h[2]) === Poker.value(h[3]) &&
+        Poker.value(h[2]) === Poker.value(h[4])) return true;
+    return false;
+  },
+
+  isStraight(h) {
+    var values = [];
+    for (var i = 0; i < 5; i++) {
+      var temp = Poker.value(h[i]);
+      switch (temp) {
+        case '0': temp = 10; break;
+        case 'J': temp = 11; break;
+        case 'Q': temp = 12; break;
+        case 'K': temp = 13; break;
+        case 'A': temp = 1; break;
+        default: temp = temp * 1; break;
+      }
+      values[i] = temp;
+    }
+    values = values.sort(function(a, b){return a-b;});
+    if (values[0] === 1 && values[1] === 10 && values[2] === 11 &&
+        values[3] === 12 && values[4] === 13) return true;
+    for (var i = 0; i < 4; i++) {
+      if (values[i] + 1 !== values[i + 1]) return false;
+    }
+    return true;
+  },
+
+  isFlush(h) {
+    for (var i = 0; i < 4; i++) {
+      if (Poker.suit(h[i]) !== Poker.suit(h[i + 1])) return false;
+    }
+    return true;
+  },
+
+  isFullHouse(h) {
+    if (Poker.value(h[0]) === Poker.value(h[1]) &&
+        Poker.value(h[0]) === Poker.value(h[2]) &&
+        Poker.value(h[3]) === Poker.value(h[4])) return true;
+    if (Poker.value(h[4]) === Poker.value(h[3]) &&
+        Poker.value(h[4]) === Poker.value(h[2]) &&
+        Poker.value(h[1]) === Poker.value(h[0])) return true;
+    return false;
+  },
+
+  isFourKind(h) {
+    if (Poker.value(h[0]) === Poker.value(h[1]) && 
+        Poker.value(h[0]) === Poker.value(h[2]) &&
+        Poker.value(h[0]) === Poker.value(h[3])) return true;
+    if (Poker.value(h[4]) === Poker.value(h[1]) && 
+        Poker.value(h[4]) === Poker.value(h[2]) &&
+        Poker.value(h[4]) === Poker.value(h[3])) return true;
+    return false;
+  },
+
+  isStraightFlush(h) {
+    return Poker.isStraight(h) && Poker.isFlush(h);
+  }
+
+};
+
+/**
+ * Returns the score
+ */
+var getScore = function (hand) {
+  if (Poker.isStraightFlush(hand)) return {text:'Straight Flush<br>(+250)',coins:250};
+  if (Poker.isFourKind(hand)) return {text:'Four of a Kind<br>(+125)',coins:125};
+  if (Poker.isFullHouse(hand)) return {text:'Full House<br>(+45)',coins:45};
+  if (Poker.isFlush(hand)) return {text:'Flush<br>(+30)',coins:30};
+  if (Poker.isStraight(hand)) return {text:'Straight<br>(+20)',coins:20};
+  if (Poker.isThreeKind(hand)) return {text:'Three of a Kind<br>(+15)',coins:15};
+  if (Poker.isTwoPair(hand)) return {text:'Two Pair<br>(+10)',coins:10};
+  if (Poker.isPair(hand)) return {text:'Pair<br>(+5)',coins:5};
+  return {text:'High Card<br>(+0)',coins:0};
+};
+
+/**
+ * Clears #hand and #results.
+ */
+var clear = function () {
+  $('hand').innerHTML = '';
+  $('results').innerHTML = '&nbsp;';
+};
+
+/**
+ * Prints the game over screen.
+ */
+var gameOverScreen = function () {
+  clear();
+  $('hand').innerHTML = '<h2>Game Over</h2>';
+};
+
+/**
+ * Returns the number of coins the player has.
+ */
+var numberCoins = function () {
+  return $('coins').innerHTML.replace('$', '') * 1;
+};
+
+/**
+ * Subtracts the ante from coins.
+ */
+var subtractAnteCoins = function (ante) {
+  var coins = numberCoins();
+  $('coins').innerHTML = '$' + (coins - ante);
+};
+
+/**
+ * Adds the winnings to coins.
+ */
+var addWinningCoins = function (winnings) {
+  var coins = numberCoins();
+  $('coins').innerHTML = '$' + (coins + winnings);
+};
+
+/**
+ * Changes CSS for discarded cards.
+ */
+var discard = function (card) {
+  if (hasClass(card, 'discard')) {
+    removeClass(card, 'discard');
+  } else {
+    addClass(card, 'discard');
+  }
+};
+
+/**
+ * Changes innerHTML of button.
+ */
+var changeButtonText = function () {
+  if ($('btn').innerHTML === 'Deal') {
+    $('btn').innerHTML = 'Draw';
+  } else {
+    $('btn').innerHTML = 'Deal';
+  }
+  return $('btn').innerHTML;
+};
+
+/**
+ * Current game state.
+ */
+var Game = {
+  count: 0,
+  deck: undefined,
+  hand: undefined
+};
+
+/**
+ * Draw new cards.
+ */
+var draw = function () {
+  var hand = Game.hand;
+  for (var i = 0; i < 5; i++) {
+    if (hasClass(hand[i], 'discard')) {
+      hand[i] = Game.deck.deal();
+    }
+  }
+  clear();
+  for (var i = 0; i < 5; i++) {
+    printCard(hand[i]);
+  }
+  var score = getScore(hand.sort());
+  printResults(score.text);
+  addWinningCoins(score.coins);
+  Game.hand = hand;
+};
+
+/**
+ * Deal hand.
+ */
+var deal = function () {
+  if (numberCoins() <= 0) return gameOverScreen();
+  subtractAnteCoins(5);
+  clear();
+  Game.deck = new Deck();
+  var hand = [];
+  for (var i = 0; i < 5; i++) {
+    var card = Game.deck.deal();
+    hand[hand.length] = card;
+    printCard(card);
+  }
+  Game.hand = hand;
+};
+
+/**
+ * Main function.
+ */
+var main = function () {
+  if (Game.count % 2 === 0) {
+    deal();
+  } else {
+    draw();
+  }
+  changeButtonText();
+  Game.count++;
+};
+
+/**
+ * Tests for Poker rankings.
+ */
+var test = function () {
+
+  var assert = function (bool, msg) {
+    var str = '<span class="';
+    if (! bool) str += 'red';
+    str+= '">' + msg + '</span>';
+    printTests(str);
+  };
+
+  printTests('TESTS<br>');
+  
+  // isPair
+  assert(Poker.isPair(['2C','3H','4H','AH','AD']), 'isPair1');
+  assert(Poker.isPair(['2C','3H','4D','KC','KS']), 'isPair2');
+  assert(! Poker.isPair(['2C','3H','5H','6D','7S']), 'isPair3');
+  assert(! Poker.isPair(['2C','2C','3H','4H','5D']), 'isPair4');
+
+  // isTwoPair
+  assert(Poker.isTwoPair(['2C','2C','3D','KS','KH']), 'isTwoPair1');
+  assert(Poker.isTwoPair(['4H','5C','5D','JS','JD']), 'isTwoPair2');
+  assert(! Poker.isTwoPair(['7S','8D','9S','9H','0H']), 'isTwoPair3'); 
+
+  // isThreeKind
+  assert(Poker.isThreeKind(['3S','5H','QD','QH','QC']), 'isThreeKind1');
+  assert(Poker.isThreeKind(['5S','8H','8S','8C','QD']), 'isThreeKind2'); 
+  assert(! Poker.isThreeKind(['2C','2S','5S','7S','7H']), 'isThreeKind3');
+
+  // isStraight
+  assert(Poker.isStraight(['4C','5H','6S','7D','8H']), 'isStraight1');
+  assert(Poker.isStraight(['0S','AD','JS','KH','QS']), 'isStraight2');
+  assert(Poker.isStraight(['2C','3H','4H','5D','AC']), 'isStraight3');
+  assert(! Poker.isStraight(['4H','5H','6C','7D','AS']), 'isStraight4');
+
+  // isFlush
+  assert(Poker.isFlush(['3C','4C','6C','0C','AC']), 'isFlush1');
+  assert(Poker.isFlush(['2H','5H','7H','8H','QH']), 'isFlush2');
+  assert(! Poker.isFlush(['7S','8S','9S','0S','JH']), 'isFlush3');
+
+  // isFullHouse
+  assert(Poker.isFullHouse(['6H','6S','6D','9S','9H']), 'isFullHouse1');
+  assert(Poker.isFullHouse(['4S','4H','0S','0H','0C']), 'isFullHouse2');
+  assert(! Poker.isFullHouse(['8H','8C','8S','JS','QH']), 'isFullHouse3');
+  
+  // isFourKind
+  assert(Poker.isFourKind(['0S','0H','0C','0D','AH']), 'isFourKind1');
+  assert(Poker.isFourKind(['2S','4H','4S','4C','4D']), 'isFourKind2');
+  assert(! Poker.isFourKind(['6S','6H','6D','7C','JS']), 'isFourKind3');
+
+  // isStraightFlush
+  assert(Poker.isStraightFlush(['4C','5C','6C','7C','8C']), 'isStraightFlush1');
+  assert(Poker.isStraightFlush(['0S','AS','JS','KS','QS']), 'isStraightFlush2');
+  assert(! Poker.isStraightFlush(['2C','3C','4C','5H','AC']), 'isStraightFlush3');
+
+};
+
+//test();
+
+</script>
+</body>
+</html>
