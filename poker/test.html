@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&clubs; Video Poker Tests</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="main.css">
+  <script src="main.js"></script>
+</head>
+<body>
+<h1>Poker Tests</h1>
+<p id="tests"></p>
+<script>
+
+/**
+ * Tests for Poker rankings.
+ */
+var test = function () {
+
+  var assert = function (bool, msg) {
+    var str = '<span class="';
+    if (! bool) str += 'red';
+    str += '">' + msg + '</span>';
+    $('tests').html(str + '<br>');
+  };
+  
+  // isPair
+  assert(poker.model.hand.isPair(['2C','3H','4H','AH','AD']), 'isPair1');
+  assert(poker.model.hand.isPair(['2C','3H','4D','KC','KS']), 'isPair2');
+  assert(! poker.model.hand.isPair(['2C','3H','5H','6D','7S']), 'isPair3');
+  assert(! poker.model.hand.isPair(['2C','2C','3H','4H','5D']), 'isPair4');
+
+  // isTwoPair
+  assert(poker.model.hand.isTwoPair(['2C','2C','3D','KS','KH']), 'isTwoPair1');
+  assert(poker.model.hand.isTwoPair(['4H','5C','5D','JS','JD']), 'isTwoPair2');
+  assert(! poker.model.hand.isTwoPair(['7S','8D','9S','9H','0H']), 'isTwoPair3'); 
+
+  // isThreeKind
+  assert(poker.model.hand.isThreeKind(['3S','5H','QD','QH','QC']), 'isThreeKind1');
+  assert(poker.model.hand.isThreeKind(['5S','8H','8S','8C','QD']), 'isThreeKind2'); 
+  assert(! poker.model.hand.isThreeKind(['2C','2S','5S','7S','7H']), 'isThreeKind3');
+
+  // isStraight
+  assert(poker.model.hand.isStraight(['4C','5H','6S','7D','8H']), 'isStraight1');
+  assert(poker.model.hand.isStraight(['0S','AD','JS','KH','QS']), 'isStraight2');
+  assert(poker.model.hand.isStraight(['2C','3H','4H','5D','AC']), 'isStraight3');
+  assert(! poker.model.hand.isStraight(['4H','5H','6C','7D','AS']), 'isStraight4');
+
+  // isFlush
+  assert(poker.model.hand.isFlush(['3C','4C','6C','0C','AC']), 'isFlush1');
+  assert(poker.model.hand.isFlush(['2H','5H','7H','8H','QH']), 'isFlush2');
+  assert(! poker.model.hand.isFlush(['7S','8S','9S','0S','JH']), 'isFlush3');
+
+  // isFullHouse
+  assert(poker.model.hand.isFullHouse(['6H','6S','6D','9S','9H']), 'isFullHouse1');
+  assert(poker.model.hand.isFullHouse(['4S','4H','0S','0H','0C']), 'isFullHouse2');
+  assert(! poker.model.hand.isFullHouse(['8H','8C','8S','JS','QH']), 'isFullHouse3');
+  
+  // isFourKind
+  assert(poker.model.hand.isFourKind(['0S','0H','0C','0D','AH']), 'isFourKind1');
+  assert(poker.model.hand.isFourKind(['2S','4H','4S','4C','4D']), 'isFourKind2');
+  assert(! poker.model.hand.isFourKind(['6S','6H','6D','7C','JS']), 'isFourKind3');
+
+  // isStraightFlush
+  assert(poker.model.hand.isStraightFlush(['4C','5C','6C','7C','8C']), 'isStraightFlush1');
+  assert(poker.model.hand.isStraightFlush(['0S','AS','JS','KS','QS']), 'isStraightFlush2');
+  assert(! poker.model.hand.isStraightFlush(['2C','3C','4C','5H','AC']), 'isStraightFlush3');
+
+};
+
+test();
+
+</script>
+</body>
+</html>
