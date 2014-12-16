@@ -233,7 +233,8 @@ poker.view.printCard = function (card) {
 
 poker.view.gameOver = function () {
   poker.view.clear.all();
-  $(poker.model.config.handID).html('<h2>Game Over</h2>');
+  poker.model.state.results = '<h2>Game Over</h2>';
+  poker.view.update.results();
 };
 
 poker.view.button = {
