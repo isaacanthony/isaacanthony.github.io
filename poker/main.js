@@ -235,6 +235,7 @@ poker.view.gameOver = function () {
   poker.view.clear.all();
   poker.model.state.results = '<h2>Game Over</h2>';
   poker.view.update.results();
+  $(poker.config.buttonID).addClass('disabled');
 };
 
 poker.view.button = {
