@@ -87,7 +87,7 @@ poker.model.card = {
 
 poker.model.hand = {
 
-  isPair(h) {
+  isPair: function (h) {
     for (var i = 0; i < 4; i++) {
       if (poker.model.card.value(h[i]) === poker.model.card.value(h[i + 1]) &&
           poker.model.card.value(h[i]).match(/[JQKA]/)) return true;
@@ -95,7 +95,7 @@ poker.model.hand = {
     return false;
   },
 
-  isTwoPair(h) {
+  isTwoPair: function (h) {
     if (poker.model.card.value(h[0]) === poker.model.card.value(h[1]) &&
        (poker.model.card.value(h[2]) === poker.model.card.value(h[3]) ||
         poker.model.card.value(h[3]) === poker.model.card.value(h[4]))) return true;
@@ -104,7 +104,7 @@ poker.model.hand = {
     return false;
   },
 
-  isThreeKind(h) {
+  isThreeKind: function (h) {
     if (poker.model.card.value(h[0]) === poker.model.card.value(h[1]) &&
         poker.model.card.value(h[0]) === poker.model.card.value(h[2])) return true;
     if (poker.model.card.value(h[1]) === poker.model.card.value(h[2]) &&
@@ -114,7 +114,7 @@ poker.model.hand = {
     return false;
   },
 
-  isStraight(h) {
+  isStraight: function (h) {
     var values = [];
     for (var i = 0; i < 5; i++) {
       var temp = poker.model.card.value(h[i]);
@@ -137,14 +137,14 @@ poker.model.hand = {
     return true;
   },
 
-  isFlush(h) {
+  isFlush: function (h) {
     for (var i = 0; i < 4; i++) {
       if (poker.model.card.suit(h[i]) !== poker.model.card.suit(h[i + 1])) return false;
     }
     return true;
   },
 
-  isFullHouse(h) {
+  isFullHouse: function (h) {
     if (poker.model.card.value(h[0]) === poker.model.card.value(h[1]) &&
         poker.model.card.value(h[0]) === poker.model.card.value(h[2]) &&
         poker.model.card.value(h[3]) === poker.model.card.value(h[4])) return true;
@@ -154,7 +154,7 @@ poker.model.hand = {
     return false;
   },
 
-  isFourKind(h) {
+  isFourKind: function (h) {
     if (poker.model.card.value(h[0]) === poker.model.card.value(h[1]) && 
         poker.model.card.value(h[0]) === poker.model.card.value(h[2]) &&
         poker.model.card.value(h[0]) === poker.model.card.value(h[3])) return true;
@@ -164,7 +164,7 @@ poker.model.hand = {
     return false;
   },
 
-  isStraightFlush(h) {
+  isStraightFlush: function (h) {
     return poker.model.hand.isStraight(h) && poker.model.hand.isFlush(h);
   }
 
