@@ -1,14 +1,15 @@
-#container{font-family:arial; width:500px; margin-left:auto; 
-  margin-right:auto; text-align:center;}
-.card{height:120px; width:80px; float:left; border: 2px solid black; 
-  border-radius:5px; margin-left:10px; margin-right:10px; margin-bottom:15px;
-  box-sizing:border-box; padding-top:30px; font-size:25px;}
+#container{font-family:arial; margin-top:7%; text-align:center;}
+#hand:{max-width:600px;}
+@media (max-width:700px) {#hand{height:100px;}}
+@media (min-width:700px) {#hand{height:150px;}}
+@media (min-width:900px) {#hand{height:200px;}}
+.card{height:100%; width:16%; float:left; border: 2px solid black; 
+  box-sizing:border-box; border-radius:5%; margin-left:2%; margin-right:2%; 
+  margin-bottom:4%; padding-top:5%; font-size:25px;}
 .card:hover{background-color:black; color:white; cursor:pointer;}
 .red{color:red;}
 .red:hover{background-color:red;}
-.ten{padding-left:2px;}
 .discard, .discard:hover{background-color:blue; color:blue;}
-#menu-bar{width:500px;}
 #coins,#results,#btn-container{width:33%; min-width:33%; float:left;}
 #coins{font-size:25px; font-weight:bold; color:green;}
 #btn{font-size: 25px; cursor:pointer;}
