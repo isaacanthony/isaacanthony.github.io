@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Border Survey</title>
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/font-awesome.css" rel="stylesheet">
+  <link href="css/leaflet.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <script src="js/jquery.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+<div class="row">
+<div class="col-md-12">
+  <h1>Border Survey <span id="county-name" class="small"></span></h1>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+  <div id="map"></div>
+</div>
+</div>
+
+<div id="modal-view" class="modal fade bs-example-modal-lg" aria-hidden="true" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h2 id="modal-county-name" class="modal-title"></h2>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-2">
+            <label>Media Type</label>
+            <select id="media-select" class="form-control"></select>
+
+            <label>Instrument</label>
+            <select id="instrument-select" class="form-control"></select>
+
+            <label>Artist</label>
+            <select id="artist-select" class="form-control"></select>
+
+            <label>Year</label>
+            <select id="year-select" class="form-control" multiple size="3"></select>
+          </div>
+          <div class="col-md-10">
+            <h3><span id="media-title"></span> <small><span id="media-artist"></span> <span id="media-year"></span></small></h3>
+            <div id ="media-content" class="text-center"></div>
+            <div id="nav-btns" class="row">
+              <div class="col-xs-6">
+                <a onclick="media.prev()"><i class="fa fa-backward"></i> Previous</a>
+              </div>
+              <div class="col-xs-6 text-right">
+                <a onclick="media.next()">Next <i class="fa fa-forward"></i></a>
+              </div>
+            </div>
+            <p id="media-description"></p>
+          </div>
+        </div>
+      </div> <!-- /.modal-body -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+</div> <!-- /.container -->
+
+<script src="js/bootstrap.js"></script>
+<script src="js/leaflet.js"></script>
+<script src="js/leaflet-geojson.js"></script>
+<script src="js/media.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,7 @@
+#map {height:500px;}
+select {margin-bottom:15px;}
+.video-iframe {width:100%; height:400px;}
+.audio-iframe {width:100%; height:150px;}
+a:hover {cursor:pointer; text-decoration:none;}
+.disabled {opacity:0.5;}
+
