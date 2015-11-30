@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Workout</title>
+  <link rel="stylesheet" href="bootstrap.css">
+  <style>
+    #workout-container {color:white; text-transform: uppercase;}
+    img{width:150px; height:150px;}
+    .pill{padding:10px 0px; margin:10px 0px; border-radius:10px;}
+    .chest{background-color:#e74c3c;}
+    .abs{background-color:#3498db;}
+    .legs{background-color:#9b59b6;}
+    .triceps{background-color:#f1c40f;}
+    .biceps{background-color:#e67e22;}
+    .forearms{background-color:#16a085;}
+    .back{background-color:#34495e;}
+    .shoulders{background-color:#336e7b;}
+  </style>
+</head>
+<body>
+
+<br>
+
+<div class="container">
+<div class="row">
+<div class="col-md-6 col-md-offset-3 well text-center">
+
+  <h1>WORKOUT</h1>
+  <div id="workout-container"></div>
+  <button class="btn btn-lg btn-primary" onclick="generate();">Generate</button>
+  <br>
+
+</div>
+</div>
+</div>
+
+<script src="exercises.js"></script>
+<script>
+'use strict';
+
+var shuffle = function(o) {
+  for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  return o;
+};
+
+var pill = function(exercise) {
+  var str = '<div class="row pill ' + exercise[1] + '"><div class="col-md-4">';
+  str += '<img src="' + exercise[3] + '" />'
+  str += '</div><div class="col-md-8">';
+  str += '<h3>' + exercise[2];
+  str += '<h4>(' + exercise[1] + ' - ';
+  str += exercise[0] + ')</h4>';
+  str += '</div></div>';
+  return str;
+};
+
+var category = function (cat) {
+  return exercises.filter(function (x) { return x[1] === cat; })[0];
+}
+
+var construct_routine = function() {
+  shuffle(exercises);
+
+  var routine = [category('chest'), category('abs'), category('shoulders'),
+                  category('biceps'), category('triceps'), category('back'),
+                  category('legs'), category('forearms')];
+
+  return shuffle(routine);
+}
+
+var generate = function() {
+  var routine = construct_routine();
+  var output = document.getElementById('workout-container');
+  output.innerHTML = pill(routine[0]) + pill(routine[1]) +
+                      pill(routine[2]) + pill(routine[3]);
+};
+
+</script>
+
+</body>
+</html>
