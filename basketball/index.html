@@ -3,46 +3,39 @@
   <head>
     <meta charset="utf-8">
     <title>Fantasy Basketball Calculator</title>
-    <style>textarea{height:300px; width:1200px;} table{border-spacing: 0px;border-collapse: collapse;} td{border: 1px solid black;padding:3px;}</style>
+    <style>body{padding: 50px;} textarea{height: 200px; width: 1200px; padding:5px;}</style>
   </head>
   <body class="container">
-    <textarea id="input"></textarea>
-    <br><br>
+    <textarea id="input"></textarea><br><br>
     <button onclick="Basketball.parse();">Parse</button>
-    <br><br>
-    <div id="output"></div>
     <script>
       'use strict';
 
-      const COLUMN_NAMES = [
-        'Number', 'Firstname', 'Lastname', 'Starter',
-        'FGM-FGA', '3PM-3PA', 'FTM-FTA', 'OR-DR',
-        'Rebounds', 'Fouls', 'Points', 'Assists',
-        'Turnovers', 'Blocks', 'Steals', 'Minutes', 'Score'
-      ];
-
-      const PROS = [8, 10, 11, 13, 14];
-      const CONS = [9, 12];
-
       var Basketball = (function() {
+        const COLS = ['##', 'Player Name ', 'POS ', 'FGA-FGM',
+                      '3PM-3PA', 'FTM-FTA', 'OR-DR', 'Rebs ',
+                      'Fouls ', 'Points ', 'Assists', 'TOs ',
+                      'Blocks ', 'Steals ', 'Mins ', 'Score'];
+        const PROS = [8, 10, 11, 13, 14];
+        const CONS = [9, 12];
+
         var input = function() {
           return document.getElementById('input').value;
         };
 
-        var outputRow = function(arr) {
-          return '<tr>' +
-            arr.reduce(function(x, y) { return x + '<td>' + y + '</td>'; }, '') +
-            '</tr>';
-        };
-
-        var outputTable = function(arr) {
-          return '<table>' +
-            [COLUMN_NAMES].concat(arr).reduce(function(x, y) { return x + outputRow(y); }, '') +
-            '</table>';
-        };
-
         var output = function(arr) {
-          document.getElementById('output').innerHTML = outputTable(arr);
+          var str = COLS.reduce(function(x, y) { return x + y + "\t"; }, '');
+
+          arr.forEach(function(row) {
+            str += "\n";
+            row.forEach(function(cell) {
+              str += cell + "\t";
+            });
+          });
+
+          str = str.replace(/([a-z])\t([A-Z])/g, "$1 $2");
+
+          document.getElementById('input').value = str;
         };
 
         var score = function(arr) {
@@ -58,8 +51,6 @@
             var row = str.trim().split(/ +/).map(function(cell) { return cell.trim(); });
             return row.concat(score(row));
           }).sort(function(x, y) { return y[16] - x[16]; });
-
-          console.log(arr);
 
           output(arr);
         };
