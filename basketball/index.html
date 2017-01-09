@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Fantasy Basketball Calculator</title>
+    <style>textarea{height:300px; width:1200px;} table{border-spacing: 0px;border-collapse: collapse;} td{border: 1px solid black;padding:3px;}</style>
+  </head>
+  <body class="container">
+    <textarea id="input"></textarea>
+    <br><br>
+    <button onclick="Basketball.parse();">Parse</button>
+    <br><br>
+    <div id="output"></div>
+    <script>
+      'use strict';
+
+      const COLUMN_NAMES = [
+        'Number', 'Firstname', 'Lastname', 'Starter',
+        'FGM-FGA', '3PM-3PA', 'FTM-FTA', 'OR-DR',
+        'Rebounds', 'Fouls', 'Points', 'Assists',
+        'Turnovers', 'Blocks', 'Steals', 'Minutes', 'Score'
+      ];
+
+      const PROS = [8, 10, 11, 13, 14];
+      const CONS = [9, 12];
+
+      var Basketball = (function() {
+        var input = function() {
+          return document.getElementById('input').value;
+        };
+
+        var outputRow = function(arr) {
+          return '<tr>' +
+            arr.reduce(function(x, y) { return x + '<td>' + y + '</td>'; }, '') +
+            '</tr>';
+        };
+
+        var outputTable = function(arr) {
+          return '<table>' +
+            [COLUMN_NAMES].concat(arr).reduce(function(x, y) { return x + outputRow(y); }, '') +
+            '</table>';
+        };
+
+        var output = function(arr) {
+          document.getElementById('output').innerHTML = outputTable(arr);
+        };
+
+        var score = function(arr) {
+          var pros = arr.filter(function(_, i) { return PROS.indexOf(i) != -1; });
+          var cons = arr.filter(function(_, i) { return CONS.indexOf(i) != -1; })
+                        .map(function(x) { return '-' + x; });
+
+          return pros.concat(cons).reduce(function(x, y) { return Number(x) + Number(y); }, 0);
+        };
+
+        var parse = function() {
+          var arr = input().split(/\n+/).map(function(str) {
+            var row = str.trim().split(/ +/).map(function(cell) { return cell.trim(); });
+            return row.concat(score(row));
+          }).sort(function(x, y) { return y[16] - x[16]; });
+
+          console.log(arr);
+
+          output(arr);
+        };
+
+        return { 'parse': parse }
+      }());
+    </script>
+  </body>
+</html>
