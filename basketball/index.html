@@ -3,13 +3,38 @@
   <head>
     <meta charset="utf-8">
     <title>Fantasy Basketball Calculator</title>
-    <style>body{padding: 50px;} textarea{height: 200px; width: 1200px; padding:5px;}</style>
+    <style>body{padding: 50px;} textarea{height: 300px; width: 1200px; padding:5px;}</style>
   </head>
   <body class="container">
-    <textarea id="input"></textarea><br><br>
+    <textarea id="board"></textarea><br><br>
     <button onclick="Basketball.parse();">Parse</button>
     <script>
       'use strict';
+
+      var Teams = [
+        {
+          'owner': 'Al',
+          'players': ['Scibelli', 'Lang', 'Goldfarb']
+        },
+        {
+          'owner': 'Sean',
+          'players': ['Sherman', 'Roth', 'Hartman']
+        },
+        {
+          'owner': 'Isaac',
+          'players': ['Garnes', 'Stogdon', 'Wiper']
+        }
+      ];
+
+      var Board = (function() {
+        var board = document.getElementById('board');
+
+        return {
+          'input': function() { return board.value; },
+          'output': function(str) { board.value += str; },
+          'clear': function() { board.value = ''; }
+        }
+      }());
 
       var Basketball = (function() {
         const COLS = ['##', 'Player Name ', 'POS ', 'FGA-FGM',
@@ -19,11 +44,7 @@
         const PROS = [8, 10, 11, 13, 14];
         const CONS = [9, 12];
 
-        var input = function() {
-          return document.getElementById('input').value;
-        };
-
-        var output = function(arr) {
+        var printTable = function(arr) {
           var str = COLS.reduce(function(x, y) { return x + y + "\t"; }, '');
 
           arr.forEach(function(row) {
@@ -35,7 +56,28 @@
 
           str = str.replace(/([a-z])\t([A-Z])/g, "$1 $2");
 
-          document.getElementById('input').value = str;
+          Board.output(str);
+        };
+
+        var printScores = function(arr) {
+          var str = "\n\nScores\n";
+
+          Teams.forEach(function(team) {
+            var total = 0;
+            var totals = [];
+
+            team.players.forEach(function(player) {
+              var sum = arr.filter(function(row) { return row[2].indexOf(player) != -1; })
+                           .reduce(function(x, y) { return x + Number(y[16]); }, 0)
+
+              totals.push(player + ' (' + sum + ')');
+              total += sum;
+            });
+
+            str += team.owner + ' (' + total + '): ' + totals.join(' + ') + "\n";
+          });
+
+          Board.output(str);
         };
 
         var score = function(arr) {
@@ -46,13 +88,18 @@
           return pros.concat(cons).reduce(function(x, y) { return Number(x) + Number(y); }, 0);
         };
 
-        var parse = function() {
-          var arr = input().split(/\n+/).map(function(str) {
+        var calculateScore = function() {
+          return Board.input().split(/\n+/).map(function(str) {
             var row = str.trim().split(/ +/).map(function(cell) { return cell.trim(); });
             return row.concat(score(row));
           }).sort(function(x, y) { return y[16] - x[16]; });
+        };
 
-          output(arr);
+        var parse = function() {
+          var arr = calculateScore();
+          Board.clear();
+          printTable(arr);
+          printScores(arr);
         };
 
         return { 'parse': parse }
